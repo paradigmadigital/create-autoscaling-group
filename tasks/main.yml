@@ -29,12 +29,12 @@
   with_items:
     - name: "Increase Group Size"
       adjustment_type: "ChangeInCapacity"
-      scaling_adjustment: "+{{ scaling_policy_scaling_adjustment }}"
+      scaling_adjustment: "+{{ scaling_policy_increase_adjustment }}"
       min_adjustment_step: 1
       cooldown: "{{ scaling_policy_cooldown }}"
     - name: "Decrease Group Size"
       adjustment_type: "ChangeInCapacity"
-      scaling_adjustment: "-{{ scaling_policy_scaling_adjustment }}"
+      scaling_adjustment: "-{{ scaling_policy_decrease_adjustment }}"
       min_adjustment_step: 1
       cooldown: "{{ scaling_policy_cooldown }}"
   register: sp_result
