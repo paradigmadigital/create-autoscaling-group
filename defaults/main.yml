@@ -19,10 +19,12 @@ sp:
   - increase:
     - adjustment_type        :
     - adjustment             :
+    - min_adjustment_step    :
     - cooldown               :
   - decrease:
     - adjustment_type        :
     - adjustment             :
+    - min_adjustment_step    :
     - cooldown               :
 
 metric:
