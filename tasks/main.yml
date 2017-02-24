@@ -44,15 +44,15 @@
       - name               : "{{ asg.name }}-ScaleUp"
         comparison         : ">="
         threshold          : "{{ metric.scaleup.threshold }}"
-        period             : "{{ metric.scaleup.period }}"
-        evaluation_periods : "{{ metric.scaleup.evaluation_periods }}"
+        period             : "{{ metric.scaleup.alarm.period }}"
+        evaluation_periods : "{{ metric.scaleup.alarm.evaluation_periods }}"
         alarm_actions      :
           - "{{ sp_result.results[0].arn }}"
       - name               : "{{ asg.name }}-ScaleDown"
         comparison         : "<="
         threshold          : "{{ metric.scaledown_threshold }}"
-        period             : "{{ metric.scaledown.period }}"
-        evaluation_periods : "{{ metric.scaledown.evaluation_periods }}"
+        period             : "{{ metric.scaledown.alarm.period }}"
+        evaluation_periods : "{{ metric.scaledown.alarm.evaluation_periods }}"
         alarm_actions      :
           - "{{ sp_result.results[1].arn }}"
 
