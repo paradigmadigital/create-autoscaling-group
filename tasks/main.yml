@@ -29,12 +29,12 @@
     - name: "Increase Group Size"
       adjustment_type: "{{ sp.increase.adjustment_type }}"
       scaling_adjustment: "+{{ sp.increase.adjustment }}"
-      min_adjustment_step: 1
+      min_adjustment_step: "{{ sp.increase.min_adjustment_step }}"
       cooldown: "{{ sp.increase.cooldown }}"
     - name: "Decrease Group Size"
       adjustment_type: "{{ sp.decrease.adjustment_type }}"
       scaling_adjustment: "-{{ sp.decrease.adjustment }}"
-      min_adjustment_step: 1
+      min_adjustment_step: "{{ sp.decrease.min_adjustment_step }}"
       cooldown: "{{ sp.decrease.cooldown }}"
   register: sp_result
 
