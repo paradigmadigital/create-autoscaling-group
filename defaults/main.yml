@@ -16,11 +16,14 @@ asg:
   - health_check_period      :
 
 sp:
-  - increase_adjustment_type :
-  - decrease_adjustment_type :
-  - increase_adjustment      :
-  - decrease_adjustment      :
-  - cooldown                 :
+  - increase:
+    - adjustment_type        :
+    - adjustment             :
+    - cooldown               :
+  - decrease:
+    - adjustment_type        :
+    - adjustment             :
+    - cooldown               :
 
 metric:
   - scaleup_threshold        :
