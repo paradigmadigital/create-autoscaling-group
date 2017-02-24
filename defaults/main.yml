@@ -1,33 +1,43 @@
 ---
 # defaults file for create-autoscaling-group
-region                       :
-availability_zones           :
+region                     :
+availability_zones         :
+
 lc:
-  - name                     :
+  - name                   :
 
 asg:
-  - name                     :
-  - min_size                 :
-  - max_size                 :
-  - desired_capacity         :
-  - vpc                      :
-  - default_cooldown         :
-  - health_check_type        :
-  - health_check_period      :
+  - name                   :
+  - min_size               :
+  - max_size               :
+  - desired_capacity       :
+  - vpc                    :
+  - default_cooldown       :
+  - health_check_type      :
+  - health_check_period    :
 
 sp:
   - increase:
-    - adjustment_type        :
-    - adjustment             :
-    - min_adjustment_step    :
-    - cooldown               :
+    - adjustment_type      :
+    - adjustment           :
+    - min_adjustment_step  :
+    - cooldown             :
+
   - decrease:
-    - adjustment_type        :
-    - adjustment             :
-    - min_adjustment_step    :
-    - cooldown               :
+    - adjustment_type      :
+    - adjustment           :
+    - min_adjustment_step  :
+    - cooldown             :
 
 metric:
-  - scaleup_threshold        :
-  - alarm_period             :
-  - alarm_evaluation_periods :
+  - scaleup:
+    - threshold            :
+    - alarm:
+      - period             :
+      - evaluation_periods :
+
+  - scaledown:
+    - threshold            :
+    - alarm:
+      - period             :
+      - evaluation_periods :
