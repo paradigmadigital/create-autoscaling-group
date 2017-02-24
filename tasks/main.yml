@@ -1,0 +1,73 @@
+---
+# tasks file for create-autoscaling-group
+- name: Configure Auto Scaling Group and perform rolling deploy
+  ec2_asg:
+    region: "{{ region }}"
+    name: "{{ asg_name }}"
+    launch_config_name: "{{ lc_name }}"
+    availability_zones: "{{ availability_zones }}"
+    health_check_type: "{{ asg_health_check_type }}"
+    health_check_period: "{{ asg_health_check_period }}"
+    desired_capacity: "{{ asg_desired_capacity }}"
+    default_cooldown: "{{ asg_default_cooldown }}"
+    vpc_zone_identifier: "{{ asg_vpc }}"
+    min_size: "{{ asg_min_size }}" 
+    max_size: "{{ asg_max_size }}" 
+    state: present
+  register: asg_result
+
+- name: Configure Scaling Policies
+  ec2_scaling_policy:
+    region: "{{ region }}"
+    name: "{{ item.name }}"
+    asg_name: "{{ asg_name }}"
+    state: present
+    adjustment_type: "{{ item.adjustment_type }}"
+    min_adjustment_step: "{{ item.min_adjustment_step }}"
+    scaling_adjustment: "{{ item.scaling_adjustment }}"
+    cooldown: "{{ item.cooldown }}"
+  with_items:
+    - name: "Increase Group Size"
+      adjustment_type: "ChangeInCapacity"
+      scaling_adjustment: "+{{ scaling_policy_scaling_adjustment }}"
+      min_adjustment_step: 1
+      cooldown: "{{ scaling_policy_cooldown }}"
+    - name: "Decrease Group Size"
+      adjustment_type: "ChangeInCapacity"
+      scaling_adjustment: "-{{ scaling_policy_scaling_adjustment }}"
+      min_adjustment_step: 1
+      cooldown: "{{ scaling_policy_cooldown }}"
+  register: sp_result
+
+- name: Determine Metric Alarm configuration
+  set_fact:
+    metric_alarms:
+      - name: "{{ asg_name }}-ScaleUp"
+        comparison: ">="
+        threshold: "{{ metric_scaleup_threshold }}"
+        alarm_actions:
+          - "{{ sp_result.results[0].arn }}"
+      - name: "{{ asg_name }}-ScaleDown"
+        comparison: "<="
+        threshold: "{{ metric_scaleup_threshold }}"
+        alarm_actions:
+          - "{{ sp_result.results[1].arn }}"
+
+- name: Configure Metric Alarms and link to Scaling Policies
+  ec2_metric_alarm:
+    region: "{{ region }}"
+    name: "{{ item.name }}"
+    state: present
+    metric: "CPUUtilization"
+    namespace: "AWS/EC2"
+    statistic: "Average"
+    comparison: "{{ item.comparison }}"
+    threshold: "{{ item.threshold }}"
+    period: "{{ metric_alarm_period }}"
+    evaluation_periods: "{{ metric_alarm_evaluation_periods }}"
+    unit: "Percent"
+    dimensions:
+      AutoScalingGroupName: "{{ asg_name }}"
+    alarm_actions: "{{ item.alarm_actions }}"
+  with_items: metric_alarms
+  when: max_size > 1
