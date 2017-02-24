@@ -27,15 +27,15 @@
     cooldown: "{{ item.cooldown }}"
   with_items:
     - name: "Increase Group Size"
-      adjustment_type: "{{ sp.increase_adjustment_type }}"
-      scaling_adjustment: "+{{ sp.increase_adjustment }}"
+      adjustment_type: "{{ sp.increase.adjustment_type }}"
+      scaling_adjustment: "+{{ sp.increase.adjustment }}"
       min_adjustment_step: 1
-      cooldown: "{{ sp.cooldown }}"
+      cooldown: "{{ sp.increase.cooldown }}"
     - name: "Decrease Group Size"
-      adjustment_type: "{{ sp.decrease_adjustment_type }}"
-      scaling_adjustment: "-{{ sp.decrease_adjustment }}"
+      adjustment_type: "{{ sp.decrease.adjustment_type }}"
+      scaling_adjustment: "-{{ sp.decrease.adjustment }}"
       min_adjustment_step: 1
-      cooldown: "{{ sp.cooldown }}"
+      cooldown: "{{ sp.decrease.cooldown }}"
   register: sp_result
 
 - name: Determine Metric Alarm configuration
