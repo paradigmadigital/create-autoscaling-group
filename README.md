@@ -17,6 +17,7 @@ Create autoscaling group from launch configuration
 * `asg.health_check_type`       : The service you want the health status from, Amazon EC2 or Elastic Load Balancer. (Choices: EC2, ELB)[Default: EC2]
 * `asg.health_check_period`     : Length of time in seconds after a new EC2 instance comes into service that Auto Scaling starts checking its health.  [Default: 500 seconds]
 * `asg.desired_capacity`        : Desired number of instances in group, if unspecified then the current group value will be used. [Default: (null)]
+* `asg.tags`                    : A list of tags to add to the Auto Scale Group. Optional key is 'propagate_at_launch', which defaults to true.  [Default: None]
 
 * `sp.increase_adjustment_type` : The type of change in capacity of the increasing of the autoscaling group (Choices: ChangeInCapacity, ExactCapacity, PercentChangeInCapacity)[Default: (null)]
 * `sp.decrease_adjustment_type` : The type of change in capacity of the decreasing of the autoscaling group (Choices: ChangeInCapacity, ExactCapacity, PercentChangeInCapacity)[Default: (null)]
