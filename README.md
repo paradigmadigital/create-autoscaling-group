@@ -1,6 +1,6 @@
 # create-autoscaling-group
 
-Create autoscaling group from launch configuration
+Create autoscaling group
 
 ## Role Variables
 
