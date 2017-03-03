@@ -1,0 +1,80 @@
+---
+# tasks file for create-autoscaling-group
+- name: Configure Auto Scaling Group and perform rolling deploy
+  ec2_asg:
+    region                 : "{{ region }}"
+    name                   : "{{ asg.name }}"
+    launch_config_name     : "{{ lc.name }}"
+    availability_zones     : "{{ availability_zones }}"
+    health_check_type      : "{{ asg.health_check_type }}"
+    health_check_period    : "{{ asg.health_check_period }}"
+    desired_capacity       : "{{ asg.desired_capacity }}"
+    default_cooldown       : "{{ asg.default_cooldown }}"
+    vpc_zone_identifier    : "{{ asg.vpc }}"
+    min_size               : "{{ asg.min_size }}"
+    max_size               : "{{ asg.max_size }}"
+    state                  : present
+    tags                   : "{{ asg.tags }}"
+  register: asg_result
+
+- name: Configure Scaling Policies
+  ec2_scaling_policy:
+    region                 : "{{ region }}"
+    name                   : "{{ item.name }}"
+    asg_name               : "{{ asg.name }}"
+    state                  : present
+    adjustment_type        : "{{ item.adjustment_type }}"
+    min_adjustment_step    : "{{ item.min_adjustment_step }}"
+    scaling_adjustment     : "{{ item.scaling_adjustment }}"
+    cooldown               : "{{ item.cooldown }}"
+  with_items:
+    - name                 : "{{ asg.name }}-Increase Group Size"
+      adjustment_type      : "{{ sp.increase.adjustment_type }}"
+      scaling_adjustment   : "+{{ sp.increase.adjustment }}"
+      min_adjustment_step  : "{{ sp.increase.min_adjustment_step }}"
+      cooldown             : "{{ sp.increase.cooldown }}"
+    - name                 : "{{ asg.name }}-Decrease Group Size"
+      adjustment_type      : "{{ sp.decrease.adjustment_type }}"
+      scaling_adjustment   : "-{{ sp.decrease.adjustment }}"
+      min_adjustment_step  : "{{ sp.decrease.min_adjustment_step }}"
+      cooldown             : "{{ sp.decrease.cooldown }}"
+  register: sp_result
+
+- name: Determine Metric Alarm configuration
+  set_fact:
+    metric_alarms:
+      - name               : "{{ asg.name }}-ScaleUp"
+        comparison         : ">="
+        threshold          : "{{ metric.scaleup.threshold }}"
+        period             : "{{ metric.scaleup.alarm.period }}"
+        evaluation_periods : "{{ metric.scaleup.alarm.evaluation_periods }}"
+        alarm_actions      :
+          - "{{ sp_result.results[0].arn }}"
+      - name               : "{{ asg.name }}-ScaleDown"
+        comparison         : "<="
+        threshold          : "{{ metric.scaledown.threshold }}"
+        period             : "{{ metric.scaledown.alarm.period }}"
+        evaluation_periods : "{{ metric.scaledown.alarm.evaluation_periods }}"
+        alarm_actions      :
+          - "{{ sp_result.results[1].arn }}"
+
+- name: Configure Metric Alarms and link to Scaling Policies
+  ec2_metric_alarm:
+    region                 : "{{ region }}"
+    name                   : "{{ item.name }}"
+    state                  : present
+    metric                 : "CPUUtilization"
+    namespace              : "AWS/EC2"
+    statistic              : "Average"
+    comparison             : "{{ item.comparison }}"
+    threshold              : "{{ item.threshold }}"
+    period                 : "{{ item.period }}"
+    evaluation_periods     : "{{ item.evaluation_periods }}"
+    unit                   : "Percent"
+    dimensions             :
+      AutoScalingGroupName : "{{ asg.name }}"
+    alarm_actions          : "{{ item.alarm_actions }}"
+  with_items: "{{metric_alarms}}"
+  when: asg.max_size > 1
+
+- debug: var=asg_result
