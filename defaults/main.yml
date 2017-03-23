@@ -15,6 +15,7 @@ asg:
   default_cooldown       :
   health_check_type      :
   health_check_period    :
+  load_balancers         :
   tags                   :
 
 sp:
