@@ -1,6 +1,6 @@
 # create-autoscaling-group
 
-Create autoscaling group
+Create autoscaling group from launch configuration
 
 ## Role Variables
 
@@ -13,6 +13,7 @@ Create autoscaling group
 * `asg.min_size`                : Minimum number of instances in group, if unspecified then the current group value will be used.
 * `asg.max_size`                : Maximum number of instances in group, if unspecified then the current group value will be used.
 * `asg.vpc`                     : List of VPC subnets to use
+* `asg.load_balancers`          : List of ELB names to use for the group [Default: (null)]
 * `asg.default_cooldown`        : The number of seconds after a scaling activity completes before another can begin.  [Default: 300 seconds]
 * `asg.health_check_type`       : The service you want the health status from, Amazon EC2 or Elastic Load Balancer. (Choices: EC2, ELB)[Default: EC2]
 * `asg.health_check_period`     : Length of time in seconds after a new EC2 instance comes into service that Auto Scaling starts checking its health.  [Default: 500 seconds]
