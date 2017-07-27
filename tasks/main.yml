@@ -14,6 +14,7 @@
     vpc_zone_identifier    : "{{ asg.vpc }}"
     min_size               : "{{ asg.min_size }}"
     max_size               : "{{ asg.max_size }}"
+    wait_timeout           : "{{ asg.timeout }}"
     state                  : present
     tags                   : "{{ asg.tags }}"
   register: asg_result
@@ -77,5 +78,3 @@
     alarm_actions          : "{{ item.alarm_actions }}"
   with_items: "{{metric_alarms}}"
   when: asg.max_size > 1
-
-- debug: var=asg_result
