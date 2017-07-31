@@ -1,25 +1,27 @@
 ---
 # tasks file for create-autoscaling-group
-- name: Configure Auto Scaling Group and perform rolling deploy
+- name: Configure Auto Scaling Group
   ec2_asg:
-    region                 : "{{ region }}"
+    region                 : "{{ asg.region }}"
     name                   : "{{ asg.name }}"
     launch_config_name     : "{{ lc.name }}"
-    availability_zones     : "{{ availability_zones }}"
+    availability_zones     : "{{ asg.availability_zones }}"
     health_check_type      : "{{ asg.health_check_type }}"
     health_check_period    : "{{ asg.health_check_period }}"
+    load_balancers         : "{{ asg.load_balancers | default('[]') }}"
     desired_capacity       : "{{ asg.desired_capacity }}"
     default_cooldown       : "{{ asg.default_cooldown }}"
     vpc_zone_identifier    : "{{ asg.vpc }}"
     min_size               : "{{ asg.min_size }}"
     max_size               : "{{ asg.max_size }}"
+    wait_timeout           : "{{ asg.timeout }}"
     state                  : present
     tags                   : "{{ asg.tags }}"
   register: asg_result
 
 - name: Configure Scaling Policies
   ec2_scaling_policy:
-    region                 : "{{ region }}"
+    region                 : "{{ asg.region }}"
     name                   : "{{ item.name }}"
     asg_name               : "{{ asg.name }}"
     state                  : present
@@ -60,7 +62,7 @@
 
 - name: Configure Metric Alarms and link to Scaling Policies
   ec2_metric_alarm:
-    region                 : "{{ region }}"
+    region                 : "{{ asg.region }}"
     name                   : "{{ item.name }}"
     state                  : present
     metric                 : "CPUUtilization"
@@ -76,5 +78,3 @@
     alarm_actions          : "{{ item.alarm_actions }}"
   with_items: "{{metric_alarms}}"
   when: asg.max_size > 1
-
-- debug: var=asg_result
