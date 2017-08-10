@@ -66,15 +66,15 @@
     name                   : "{{ item.name }}"
     state                  : present
     metric                 : "{{ metric.namespace }}"
-    namespace              : "AWS/EC2"
-    statistic              : "Average"
+    namespace              : "{{ metric.namespace }}"
+    statistic              : "{{ metric.statistic }}"
     comparison             : "{{ item.comparison }}"
     threshold              : "{{ item.threshold }}"
     period                 : "{{ item.period }}"
     evaluation_periods     : "{{ item.evaluation_periods }}"
-    unit                   : "Percent"
+    unit                   : "{{ metric.unit }}"
     dimensions             :
       AutoScalingGroupName : "{{ asg.name }}"
     alarm_actions          : "{{ item.alarm_actions }}"
-  with_items: "{{metric_alarms}}"
+  with_items: "{{ metric_alarms }}"
   when: asg.max_size > 1
