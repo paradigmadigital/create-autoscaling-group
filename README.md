@@ -33,6 +33,7 @@ Create autoscaling group from launch configuration
 * `metric.scaledown.threshold`  : Sets the min bound for triggering the scale down alarm [Default: (null)]
 * `metric.scaledown.alarm.period`             : The time (in seconds) between metric evaluations for the scale down alarm [Default: (null)]
 * `metric.scaledown.alarm.evaluation_periods` : The number of times in which the metric is evaluated before final calculation for the scale up alarm [Default: (null)]
+* `metric.namespace`                 : Which namespace you want the alarm to use.
 
 
 ## Example playbook
