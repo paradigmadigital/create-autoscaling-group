@@ -65,7 +65,7 @@
     region                 : "{{ asg.region }}"
     name                   : "{{ item.name }}"
     state                  : present
-    metric                 : "CPUUtilization"
+    metric                 : "{{ metric.namespace }}"
     namespace              : "AWS/EC2"
     statistic              : "Average"
     comparison             : "{{ item.comparison }}"

@@ -32,6 +32,7 @@ sp:
     cooldown             :
 
 metric:
+  namespace              :
   scaleup:
     threshold            :
     alarm:
