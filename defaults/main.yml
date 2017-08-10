@@ -32,7 +32,9 @@ sp:
     cooldown             :
 
 metric:
-  namespace              :
+  namespace              : CPUUtilization
+  unit                   : Count
+  statistic              : Average
   scaleup:
     threshold            :
     alarm:
