@@ -65,7 +65,7 @@
     region                 : "{{ asg.region }}"
     name                   : "{{ item.name }}"
     state                  : present
-    metric                 : "{{ metric.namespace }}"
+    metric                 : "{{ metric.name }}"
     namespace              : "{{ metric.namespace }}"
     statistic              : "{{ metric.statistic }}"
     comparison             : "{{ item.comparison }}"
