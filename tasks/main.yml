@@ -22,43 +22,32 @@
 - name: Configure Scaling Policies
   ec2_scaling_policy:
     region                 : "{{ asg.region }}"
-    name                   : "{{ item.name }}"
+    name                   : "{{ item.value.policy_name }}"
     asg_name               : "{{ asg.name }}"
-    state                  : present
-    adjustment_type        : "{{ item.adjustment_type }}"
-    min_adjustment_step    : "{{ item.min_adjustment_step }}"
-    scaling_adjustment     : "{{ item.scaling_adjustment }}"
-    cooldown               : "{{ item.cooldown }}"
-  with_items:
-    - name                 : "{{ asg.name }}-Increase Group Size"
-      adjustment_type      : "{{ sp.increase.adjustment_type }}"
-      scaling_adjustment   : "+{{ sp.increase.adjustment }}"
-      min_adjustment_step  : "{{ sp.increase.min_adjustment_step }}"
-      cooldown             : "{{ sp.increase.cooldown }}"
-    - name                 : "{{ asg.name }}-Decrease Group Size"
-      adjustment_type      : "{{ sp.decrease.adjustment_type }}"
-      scaling_adjustment   : "-{{ sp.decrease.adjustment }}"
-      min_adjustment_step  : "{{ sp.decrease.min_adjustment_step }}"
-      cooldown             : "{{ sp.decrease.cooldown }}"
+    adjustment_type        : "{{ item.value.adjustment_type }}"
+    min_adjustment_step    : "{{ item.value.min_adjustment_step }}"
+    scaling_adjustment     : "{{ item.value.scaling_adjustment }}"
+    cooldown               : "{{ item.value.cooldown }}"
+  with_dict: "{{ policy_alarm }}"
   register: sp_result
 
-- name: Determine Metric Alarm configuration
-  set_fact:
-    metric_alarms:
-      - name               : "{{ asg.name }}-ScaleUp"
-        comparison         : ">="
-        threshold          : "{{ metric.scaleup.threshold }}"
-        period             : "{{ metric.scaleup.alarm.period }}"
-        evaluation_periods : "{{ metric.scaleup.alarm.evaluation_periods }}"
-        alarm_actions      :
-          - "{{ sp_result.results[0].arn }}"
-      - name               : "{{ asg.name }}-ScaleDown"
-        comparison         : "<="
-        threshold          : "{{ metric.scaledown.threshold }}"
-        period             : "{{ metric.scaledown.alarm.period }}"
-        evaluation_periods : "{{ metric.scaledown.alarm.evaluation_periods }}"
-        alarm_actions      :
-          - "{{ sp_result.results[1].arn }}"
+- name: Configure Metric Alarms
+  ec2_metric_alarm:
+    region                 : "{{ asg.region }}"
+    name                   : "{{ item.value.metric_name }}"
+    metric                 : "{{ item.value.type }}"
+    namespace              : "{{ item.value.namespace }}"
+    statistic              : "{{ item.value.statistic }}"
+    comparison             : "{{ item.value.comparison }}"
+    threshold              : "{{ item.value.threshold }}"
+    period                 : "{{ item.value.period }}"
+    evaluation_periods     : "{{ item.value.evaluation_periods }}"
+    unit                   : "{{ item.value.unit }}"
+    dimensions             :
+      AutoScalingGroupName : "{{ asg.name }}"
+    alarm_actions          :
+      - "{{ sp_result.results[0].arn }}"
+  with_dict: "{{ policy_alarm }}"
 
 - name: Configure Metric Alarms and link to Scaling Policies
   ec2_metric_alarm:

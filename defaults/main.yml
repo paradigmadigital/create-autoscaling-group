@@ -18,31 +18,19 @@ asg:
   load_balancers         :
   tags                   :
 
-sp:
-  increase:
+metrics:
+  policy:
+    policy_name          :
+    metric_name          :
     adjustment_type      :
-    adjustment           :
+    scaling_adjustment   :
     min_adjustment_step  :
     cooldown             :
-
-  decrease:
-    adjustment_type      :
-    adjustment           :
-    min_adjustment_step  :
-    cooldown             :
-
-metric:
-  namespace              : CPUUtilization
-  unit                   : Count
-  statistic              : Average
-  scaleup:
+    type                 :
+    comparison           :
     threshold            :
-    alarm:
-      period             :
-      evaluation_periods :
-
-  scaledown:
-    threshold            :
-    alarm:
-      period             :
-      evaluation_periods :
+    period               :
+    evaluation_periods   :
+    namespace            : CPUUtilization
+    statistic            : Average
+    unit                 : Count
